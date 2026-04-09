@@ -433,20 +433,23 @@ function getGPS() {
   btn.textContent = '⏳...';
   
   navigator.geolocation.getCurrentPosition(pos => {
-    document.getElementById('f-lat').value = pos.coords.latitude;
-    document.getElementById('f-lng').value = pos.coords.longitude;
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    
+    document.getElementById('f-lat').value = lat;
+    document.getElementById('f-lng').value = lng;
     document.getElementById('f-loc').value = 'Posizione esatta ✓';
     btn.textContent = '✓ GPS';
+    
+    // Opzionale: sposta la mappa del modale se ne avessi una, 
+    // o semplicemente conferma all'utente la precisione
     showToast('Posizione acquisita con precisione', 'green');
   }, () => {
     btn.textContent = '📍 GPS';
-    showToast('GPS non disponibile — inserisci il quartiere');
-  }, { 
-    enableHighAccuracy: true, 
-    timeout: 10000 
-  });
+    showToast('Impossibile ottenere posizione precisa. Controlla i permessi.');
+  }, { enableHighAccuracy: true }); // <--- Fondamentale
 }
-
+  
 async function publish() {
   const title  =document.getElementById('f-title').value.trim();
   const price  =parseFloat(document.getElementById('f-price').value)||0;
