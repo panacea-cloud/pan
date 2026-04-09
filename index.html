@@ -261,7 +261,7 @@ function initMap() {
    .addTo(map).bindTooltip('Sei qui');
 }
 
-function locateUser() {
+function locateUser(setupAddressSearch();) {
   if (!navigator.geolocation){loadListings();return;}
   navigator.geolocation.getCurrentPosition(pos=>{
     userLat=pos.coords.latitude; userLng=pos.coords.longitude;
