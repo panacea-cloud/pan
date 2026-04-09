@@ -429,14 +429,22 @@ function previewImgs(input) {
 }
 
 function getGPS() {
-  const btn=document.getElementById('gps-btn');
-  btn.textContent='⏳';
-  navigator.geolocation.getCurrentPosition(pos=>{
-    document.getElementById('f-lat').value=pos.coords.latitude;
-    document.getElementById('f-lng').value=pos.coords.longitude;
-    document.getElementById('f-loc').value='Posizione rilevata ✓';
-    btn.textContent='✓ GPS';
-  },()=>{btn.textContent='📍 GPS';showToast('GPS non disponibile — inserisci il quartiere');});
+  const btn = document.getElementById('gps-btn');
+  btn.textContent = '⏳...';
+  
+  navigator.geolocation.getCurrentPosition(pos => {
+    document.getElementById('f-lat').value = pos.coords.latitude;
+    document.getElementById('f-lng').value = pos.coords.longitude;
+    document.getElementById('f-loc').value = 'Posizione esatta ✓';
+    btn.textContent = '✓ GPS';
+    showToast('Posizione acquisita con precisione', 'green');
+  }, () => {
+    btn.textContent = '📍 GPS';
+    showToast('GPS non disponibile — inserisci il quartiere');
+  }, { 
+    enableHighAccuracy: true, 
+    timeout: 10000 
+  });
 }
 
 async function publish() {
