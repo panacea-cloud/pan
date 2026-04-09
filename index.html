@@ -430,24 +430,77 @@ function previewImgs(input) {
 
 function getGPS() {
   const btn = document.getElementById('gps-btn');
-  btn.textContent = '⏳...';
-  
+  btn.textContent = '⏳';
   navigator.geolocation.getCurrentPosition(pos => {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-    
-    document.getElementById('f-lat').value = lat;
-    document.getElementById('f-lng').value = lng;
-    document.getElementById('f-loc').value = 'Posizione esatta ✓';
-    btn.textContent = '✓ GPS';
-    
-    // Opzionale: sposta la mappa del modale se ne avessi una, 
-    // o semplicemente conferma all'utente la precisione
-    showToast('Posizione acquisita con precisione', 'green');
+    document.getElementById('f-lat').value = pos.coords.latitude;
+    document.getElementById('f-lng').value = pos.coords.longitude;
+    // Reverse geocoding — ricava il nome del quartiere dalle coordinate
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=it`)
+      .then(r => r.json())
+      .then(d => {
+        const zona = d.address.suburb || d.address.quarter || d.address.neighbourhood || d.address.city_district || d.address.city || '';
+        document.getElementById('f-loc').value = zona;
+        btn.textContent = '✓ GPS';
+        showToast('Posizione rilevata: ' + zona, 'green');
+      })
+      .catch(() => {
+        document.getElementById('f-loc').value = 'Posizione rilevata ✓';
+        btn.textContent = '✓ GPS';
+      });
   }, () => {
     btn.textContent = '📍 GPS';
-    showToast('Impossibile ottenere posizione precisa. Controlla i permessi.');
-  }, { enableHighAccuracy: true }); // <--- Fondamentale
+    showToast('GPS non disponibile — inserisci il quartiere');
+  }, { enableHighAccuracy: true });
+}
+
+// Geocoding diretto — cerca indirizzo mentre scrivi
+function setupAddressSearch() {
+  const input = document.getElementById('f-loc');
+  let timer;
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    const q = input.value.trim();
+    if (q.length < 3) { removeGeoSuggestions(); return; }
+    timer = setTimeout(async () => {
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=4&accept-language=it&countrycodes=it`);
+        const results = await r.json();
+        showGeoSuggestions(results, input);
+      } catch {}
+    }, 400);
+  });
+}
+
+function showGeoSuggestions(results, input) {
+  removeGeoSuggestions();
+  if (!results.length) return;
+  const box = document.createElement('div');
+  box.id = 'geo-suggestions';
+  box.style.cssText = 'position:absolute;z-index:9999;background:#fff;border:1px solid rgba(26,26,24,.12);border-radius:8px;width:100%;margin-top:4px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.08)';
+  results.forEach(r => {
+    const item = document.createElement('div');
+    item.style.cssText = 'padding:9px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid rgba(26,26,24,.06);color:#1a1a18';
+    item.textContent = r.display_name.split(',').slice(0,3).join(', ');
+    item.onmouseenter = () => item.style.background = '#f0f0ee';
+    item.onmouseleave = () => item.style.background = '';
+    item.onclick = () => {
+      input.value = r.display_name.split(',').slice(0,2).join(', ');
+      document.getElementById('f-lat').value = r.lat;
+      document.getElementById('f-lng').value = r.lon;
+      removeGeoSuggestions();
+      // Sposta la mappa sulla posizione scelta
+      if (map) map.setView([parseFloat(r.lat), parseFloat(r.lon)], 15);
+      showToast('Posizione selezionata', 'green');
+    };
+    box.appendChild(item);
+  });
+  const wrap = input.closest('.loc-row') || input.parentElement;
+  wrap.style.position = 'relative';
+  wrap.appendChild(box);
+}
+
+function removeGeoSuggestions() {
+  document.getElementById('geo-suggestions')?.remove();
 }
   
 async function publish() {
