@@ -291,29 +291,7 @@ async function loadListings() {
     document.getElementById('count-tag').textContent = allItems.length + ' sulla mappa';
   } catch (err) {
     console.error("Errore caricamento Supabase:", err);
-    // Abbiamo rimosso loadDemo() da qui, così non sovrascrive i tuoi dati reali
-  }
-}
-
-function ago(h){return new Date(Date.now()-h*3600000).toISOString();}
-
-function loadDemo() {
-  allItems=[
-    {id:1,title:'Nike Air Max 90 tg 42',category:'abbigliamento',price:55,condition:'Ottime',description:'Come nuove, con scatola originale.',location:'Prati',lat:41.908,lng:12.462,contact:'346xxxxxxx',created_at:ago(1)},
-    {id:2,title:'MacBook Pro 2019 13"',category:'elettronica',price:650,condition:'Buone',description:'SSD 256GB, batteria nuova.',location:'Trastevere',lat:41.889,lng:12.469,contact:'via DM',created_at:ago(2)},
-    {id:3,title:'Cassettiera ferro battuto',category:'arredamento',price:45,condition:'Buone',description:'3 cassetti, ritiro a mano.',location:'Prati',lat:41.912,lng:12.459,contact:'334xxxxxxx',created_at:ago(3)},
-    {id:4,title:'Trek Domane 54cm',category:'sport',price:320,condition:'Buone',description:'Shimano 105, revisione fatta.',location:'Flaminio',lat:41.921,lng:12.474,contact:'320xxxxxxx',created_at:ago(24)},
-    {id:5,title:'Harry Potter serie completa',category:'libri',price:25,condition:'Ottime',description:'Edizione illustrata, 7 volumi.',location:'Testaccio',lat:41.882,lng:12.473,contact:'339xxxxxxx',created_at:ago(48)},
-    {id:6,title:'La Roche-Posay SPF50',category:'bellezza',price:9,condition:'Ottime',description:'Quasi pieno, regalo non usato.',location:'Parioli',lat:41.924,lng:12.493,contact:'349xxxxxxx',created_at:ago(0.5)},
-    {id:7,title:'PS5 + 3 giochi',category:'giochi',price:380,condition:'Ottime',description:'Perfetta, comprata a dicembre.',location:'EUR',lat:41.853,lng:12.476,contact:'348xxxxxxx',created_at:ago(1.5)},
-    {id:8,title:'Lampada Artemide vintage',category:'arredamento',price:80,condition:'Buone',description:'Anni 80, originale e funziona.',location:'Ostiense',lat:41.868,lng:12.477,contact:'333xxxxxxx',created_at:ago(12)},
-    {id:9,title:'iPhone 13 128GB',category:'elettronica',price:430,condition:'Ottime',description:'Ottime condizioni, con cover.',location:'Nomentano',lat:41.916,lng:12.512,contact:'351xxxxxxx',created_at:ago(0.3)},
-    {id:10,title:'Torneo padel 4v4 — sabato',category:'sport',price:0,condition:'N/A',description:'Cercasi 2 giocatori livello intermedio.',location:'Prati',lat:41.910,lng:12.460,contact:'via chat',created_at:ago(0.2),event_date:'2026-04-19'},
-    {id:11,title:'Aperitivo in terrazza',category:'eventi',price:10,condition:'N/A',description:'30 posti max. Drink incluso.',location:'Trastevere',lat:41.887,lng:12.468,contact:'346xxxxxxx',created_at:ago(0.3),event_date:'2026-04-20'},
-    {id:12,title:'Lezioni chitarra 20€/ora',category:'servizi',price:20,condition:'N/A',description:'Tutti i livelli, a domicilio.',location:'Parioli',lat:41.922,lng:12.491,contact:'333xxxxxxx',created_at:ago(2)},
-    {id:13,title:'Stanza singola — Testaccio',category:'immobili',price:600,condition:'Ottime',description:'3 coinquilini, utenze incluse.',location:'Testaccio',lat:41.880,lng:12.472,contact:'340xxxxxxx',created_at:ago(1)},
-    {id:14,title:'Surplus pane — Forno Roscioli',category:'cibo',price:0,condition:'N/A',description:'Invenduto del giorno, dopo le 18. Gratis.',location:'Campo de Fiori',lat:41.895,lng:12.472,contact:'in negozio',created_at:ago(0.1)},
-  ].map(i=>({...i,active:true,dist:haversine(userLat,userLng,i.lat,i.lng)}));
+   
   renderSidebar(); renderMarkers();
   document.getElementById('count-tag').textContent=allItems.length+' sulla mappa (demo)';
   document.getElementById('loc-label').textContent='Roma · demo';
