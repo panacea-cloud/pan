@@ -278,15 +278,21 @@ function recenter(){map.setView([userLat,userLng],14);}
 
 async function loadListings() {
   try {
-    let q=sb.from('listings').select('*').eq('active',true).order('created_at',{ascending:false}).limit(200);
-    if(activeCat) q=q.eq('category',activeCat);
-    if(searchQ)   q=q.ilike('title',`%${searchQ}%`);
-    const {data,error}=await q;
-    if(error) throw error;
-    allItems=(data||[]).map(i=>({...i,dist:i.lat&&i.lng?haversine(userLat,userLng,i.lat,i.lng):null}));
-    renderSidebar(); renderMarkers();
-    document.getElementById('count-tag').textContent=allItems.length+' sulla mappa';
-  } catch { loadDemo(); }
+    let q = sb.from('listings').select('*').eq('active', true).order('created_at', { ascending: false }).limit(200);
+    if (activeCat) q = q.eq('category', activeCat);
+    if (searchQ) q = q.ilike('title', `%${searchQ}%`);
+    
+    const { data, error } = await q;
+    if (error) throw error;
+
+    allItems = (data || []).map(i => ({ ...i, dist: i.lat && i.lng ? haversine(userLat, userLng, i.lat, i.lng) : null }));
+    renderSidebar();
+    renderMarkers();
+    document.getElementById('count-tag').textContent = allItems.length + ' sulla mappa';
+  } catch (err) {
+    console.error("Errore caricamento Supabase:", err);
+    // Abbiamo rimosso loadDemo() da qui, così non sovrascrive i tuoi dati reali
+  }
 }
 
 function ago(h){return new Date(Date.now()-h*3600000).toISOString();}
